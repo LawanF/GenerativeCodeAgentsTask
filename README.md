@@ -1,7 +1,7 @@
 # GenerativeCodeAgentsTask
 A simple CLI tool that feeds a given Python script through a large language model in order to fix errors. 
 
-### Setup
+### Setup and Usage
 1. Configure the ``config.ini`` file in the top directory, adding your desired API key, base url and model.
 2. Compile the Kotlin code.
 ```
