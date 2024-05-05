@@ -43,5 +43,5 @@ bin/
 
 ### Project Files ###
 pythonScripts/
-/LLMIO/prompt.txt
-/LLMIO/output.py
+/LLMIO/input/prompt.txt
+/LLMIO/output/output.py

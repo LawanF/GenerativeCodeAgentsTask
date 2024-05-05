@@ -2,10 +2,10 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 
-private const val MAX_ATTEMPTS: Int = 1 // Min: 1
-private val apiPyPath = "src/main/python/api.py"
-private val promptTxtPath = "LLMIO/prompt.txt"
-private val outputPyPath = "LLMIO/output.py"
+private const val DEFAULT_MAX_ATTEMPTS: Int = 5 // Min: 1
+private const val apiPyPath = "src/main/python/api.py"
+private const val promptTxtPath = "LLMIO/input/prompt.txt"
+private const val defaultOutputPyPath = "LLMIO/output/output.py"
 
 // PRE: path gives a valid (content root or absolute) path to a python script.
 fun getErrorFromPythonScript(path: String): String {
@@ -13,7 +13,6 @@ fun getErrorFromPythonScript(path: String): String {
     process.waitFor()
     val stdError = BufferedReader(InputStreamReader(process.errorStream))
     val returnString = stdError.use(BufferedReader::readText)
-    println(returnString)
     return returnString
 }
 
@@ -23,7 +22,6 @@ fun getOutputFromPythonScript(path: String): String {
     process.waitFor()
     val stdInput = BufferedReader(InputStreamReader(process.inputStream))
     val returnString = stdInput.use(BufferedReader::readText)
-    println(returnString)
     return returnString
 }
 
@@ -46,15 +44,24 @@ that gives the following error:
 ```
 $errorString```
 Return the whole script.
-""".trimIndent()
+    """.trimIndent()
 
 fun main() {
     // Opening the input script and output script.
     println("Input the path to the python script: ")
     val pythonIn: File = File(readln())
-    val pythonOut: File = File(outputPyPath)
 
-    // Grab error if there is one.
+    println("Note that the destination file will be overridden if it exists.")
+    println("Input the desired destination file (leave empty for LLMIO/output/output.py): ")
+    val pythonOut: File = readln().let { path ->
+        if (path.isEmpty()) {
+            File(defaultOutputPyPath)
+        } else {
+            File(path)
+        }
+    }
+
+    // Get error if there is one.
     var errorString: String = getErrorFromPythonScript(pythonIn.absolutePath)
 
     // If there is an error.
@@ -68,9 +75,9 @@ fun main() {
         // Get the new error.
         errorString = getErrorFromPythonScript(pythonOut.absolutePath)
 
-        // Repeat the process until there no longer is an error.
+        // Repeat the process until there no longer is an error, or if number of max attempts is reached.
         var attempts: Int = 1
-        while (errorString.isNotEmpty() && attempts < MAX_ATTEMPTS) {
+        while (errorString.isNotEmpty() && attempts < DEFAULT_MAX_ATTEMPTS) {
             writeStringToFile(formPrompt(pythonOut, errorString), promptTxtPath)
             pythonOut.writeText(getOutputFromPythonScript(apiPyPath))
             errorString = getErrorFromPythonScript(pythonOut.absolutePath)
@@ -78,29 +85,12 @@ fun main() {
         }
 
         if (errorString.isNotEmpty()) {
-            println("Couldn't resolve the error. Last attempt stored in ${pythonOut.path}")
+            println("Couldn't resolve the error(s). Last attempt stored in ${pythonOut.path}")
         } else {
-            println("Error is resolved. Resulting code is stored in ${pythonOut.path}.")
+            println("Error(s) resolved. Resulting code is stored in ${pythonOut.path}.")
         }
 
     } else {
         println("Your script ran without errors. No changes made.")
     }
-
-//    val newFile: File = File("pythonScripts/output/output.txt")
-//
-//    var errorString: String = ""
-//
-//    if (file.exists() && file.path.takeLast(3) == ".py") {
-//        errorString = getError(file.path)
-//    } else {
-//        throw IllegalArgumentException("File does not exist or is not a python script.")
-//    }
-//
-//    while (errorString.isNotEmpty()) {
-//        newFile.delete()
-//        newFile.createNewFile()
-//        newFile.writeText(callLLM(file, errorString))
-//        errorString = ""
-//    }
 }

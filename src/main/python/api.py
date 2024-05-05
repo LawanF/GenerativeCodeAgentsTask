@@ -1,9 +1,18 @@
 from openai import OpenAI
+import configparser
 
-API_KEY = "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"
-system_message = "You are an artificial intelligence assistant and you need to suggest fixes and improvements to the user's python code. Only return the code with no explanations."
-prompt = open("LLMIO/prompt.txt").read()
-model = "llama-3-8b-instruct"
+config = configparser.ConfigParser()
+config.read("config.ini")
+model_parameters = config["model_parameters"]
+
+
+API_KEY = model_parameters["api_key"]
+base_url = model_parameters["base_url"]
+
+system_message = model_parameters["system_message"]
+prompt = open("LLMIO/input/prompt.txt").read()
+model = model_parameters["model"]
+temperature = model_parameters["temperature"]
 
 messages = [
     {
@@ -16,11 +25,12 @@ messages = [
     },
 ]
 
-client = OpenAI(api_key=API_KEY, base_url="https://api.perplexity.ai")
+client = OpenAI(api_key=API_KEY, base_url=base_url)
 
 response = client.chat.completions.create(
     model=model,
     messages=messages,
+    temperature=1.0,
 )
 response_content = response.choices[0].message.content
 
