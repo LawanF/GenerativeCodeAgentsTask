@@ -37,14 +37,14 @@ fun formPrompt(
     file: File,
     errorString: String,
 ) = """
-    Fix the following Python code:
-    ```python
-    ${file.readText()}file.readText()}
-    ```
-    that gives the following error:
-    ```
-    $errorString```
-    Return the whole script.
+Fix the following Python code:
+```python
+${file.readText()}file.readText()}
+```
+that gives the following error:
+```
+$errorString```
+Return the whole script.
     """.trimIndent()
 
 fun main() {
