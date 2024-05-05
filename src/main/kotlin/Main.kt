@@ -3,17 +3,16 @@ import java.io.File
 import java.io.InputStreamReader
 
 private const val DEFAULT_MAX_ATTEMPTS: Int = 5 // Min: 1
-private const val apiPyPath = "src/main/python/api.py"
-private const val promptTxtPath = "LLMIO/input/prompt.txt"
-private const val defaultOutputPyPath = "LLMIO/output/output.py"
+private const val apiPyPath: String = "src/main/python/api.py"
+private const val promptTxtPath: String = "LLMIO/input/prompt.txt"
+private const val defaultOutputPyPath: String = "LLMIO/output/output.py"
 
 // PRE: path gives a valid (content root or absolute) path to a python script.
 fun getErrorFromPythonScript(path: String): String {
     val process: Process = Runtime.getRuntime().exec("python $path")
     process.waitFor()
     val stdError = BufferedReader(InputStreamReader(process.errorStream))
-    val returnString = stdError.use(BufferedReader::readText)
-    return returnString
+    return stdError.use(BufferedReader::readText)
 }
 
 // PRE: path gives a valid (content root or absolute) path to a python script.
@@ -21,45 +20,48 @@ fun getOutputFromPythonScript(path: String): String {
     val process: Process = Runtime.getRuntime().exec("python $path")
     process.waitFor()
     val stdInput = BufferedReader(InputStreamReader(process.inputStream))
-    val returnString = stdInput.use(BufferedReader::readText)
-    return returnString
+    return stdInput.use(BufferedReader::readText)
 }
 
 // PRE: path gives a valid (content root or absolute) path to a file.
-fun writeStringToFile(string: String, path: String) {
-    val file: File = File(path)
+fun writeStringToFile(
+    string: String,
+    path: String,
+) {
+    val file = File(path)
     file.writeText(string)
 }
 
 // PRE: path gives a valid (content root or absolute) path to a file.
-fun getStringFromFile(filePath: String) = File(filePath).readText()
-
-// PRE: path gives a valid (content root or absolute) path to a file.
-fun formPrompt(file: File, errorString: String) = """
-Fix the following Python code:
-```python
-${file.readText()}
-```
-that gives the following error:
-```
-$errorString```
-Return the whole script.
+fun formPrompt(
+    file: File,
+    errorString: String,
+) = """
+    Fix the following Python code:
+    ```python
+    ${file.readText()}file.readText()}
+    ```
+    that gives the following error:
+    ```
+    $errorString```
+    Return the whole script.
     """.trimIndent()
 
 fun main() {
     // Opening the input script and output script.
     println("Input the path to the python script: ")
-    val pythonIn: File = File(readln())
+    val pythonIn = File(readln())
 
     println("Note that the destination file will be overridden if it exists.")
     println("Input the desired destination file (leave empty for LLMIO/output/output.py): ")
-    val pythonOut: File = readln().let { path ->
-        if (path.isEmpty()) {
-            File(defaultOutputPyPath)
-        } else {
-            File(path)
+    val pythonOut: File =
+        readln().let { path ->
+            if (path.isEmpty()) {
+                File(defaultOutputPyPath)
+            } else {
+                File(path)
+            }
         }
-    }
 
     // Get error if there is one.
     var errorString: String = getErrorFromPythonScript(pythonIn.absolutePath)
@@ -89,7 +91,6 @@ fun main() {
         } else {
             println("Error(s) resolved. Resulting code is stored in ${pythonOut.path}.")
         }
-
     } else {
         println("Your script ran without errors. No changes made.")
     }
