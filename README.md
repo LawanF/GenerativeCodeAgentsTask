@@ -2,7 +2,7 @@
 A simple CLI tool that feeds a given Python script through a large language model in order to fix errors. 
 
 ### Setup and Usage
-1. Configure the ``config.ini`` file in the top directory, adding your desired API key, base url and model.
+1. Configure the ``config.ini`` file, adding your desired API key, base url and model.
 2. Compile the Kotlin code.
 ```
 $ kotlinc src/main/kotlin/Main.kt -include-runtime -d codeAgent.jar
