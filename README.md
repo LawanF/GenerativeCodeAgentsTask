@@ -7,7 +7,7 @@ A simple CLI tool that feeds a given Python script through a large language mode
 ```
 $ kotlinc src/main/kotlin/Main.kt -include-runtime -d codeAgent.jar
 ```
-4. Run the ``codeAgent.jar``.
+4. Run ``codeAgent.jar``.
 ```
 $ java -jar codeAgent.jar
 ```
