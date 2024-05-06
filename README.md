@@ -15,4 +15,4 @@ $ java -jar codeAgent.jar
 7. Input the desired destination. If no destination is given, the resulting code is stored in ``LLMIO/output/output.py``.
 
 ### Note!
-This was developed using the OpenAI API for Python, using Llama3 8b with a Perplexity API token.
+This was developed using the OpenAI API for Python, using Llama3 8b with a Perplexity API token. When adding your own API key and base url, anything should work, given that it is compatible with the OpenAI API.

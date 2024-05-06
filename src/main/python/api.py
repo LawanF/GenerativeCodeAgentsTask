@@ -1,7 +1,7 @@
+from configparser import ConfigParser
 from openai import OpenAI
-import configparser
 
-config = configparser.ConfigParser()
+config = ConfigParser()
 config.read("config.ini")
 model_parameters = config["model_parameters"]
 
@@ -34,13 +34,13 @@ response = client.chat.completions.create(
 )
 response_content = response.choices[0].message.content
 
-def parseBackticks(string):
-    copyString = string.split("\n")
-    if (copyString[0][0:3] == "```"):
-        copyString = copyString[1:]
-    if (copyString[-1][-3:] == "```"):
-        copyString = copyString[:-1]
+def parse_backticks(string):
+    copy_string = string.split("\n")
+    if (copy_string[0][0:3] == "```"):
+        copy_string = copy_string[1:]
+    if (copy_string[-1][-3:] == "```"):
+        copy_string = copy_string[:-1]
 
-    return "\n".join(copyString)
+    return "\n".join(copy_string)
 
-print(parseBackticks(response.choices[0].message.content))
+print(parse_backticks(response.choices[0].message.content))
